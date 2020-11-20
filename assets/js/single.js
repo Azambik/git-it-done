@@ -1,5 +1,6 @@
 //DOM elements
 var issueContainerEl = document.querySelector("#issues-container");
+var limitWarningEl = document.querySelector("#limit-warning");
 //variables
 //functions
 var GetRepoIssues = function(repo) {
@@ -12,6 +13,10 @@ var GetRepoIssues = function(repo) {
             response.json().then(function(data){
                 //pass response data to dom function
                 displayIssues(data);
+                //check if api has pageinated issues
+                if (response.headers.get("link")){
+                    displayWarning(repo);
+                }
             });
         }
         else {
@@ -60,4 +65,20 @@ var displayIssues = function(issues) {
 
 };
 
-GetRepoIssues("Azambik/taskinator");
+//limit warning
+var displayWarning = function(repo) {
+
+    //add text to warning container
+    limitWarningEl.textContent = "To see more than 30 issues, visit" ;
+
+    //making warning element
+    var linkEl = document.createElement("a");
+    linkEl.textContent = "See More Issues on GitHub.com";
+    linkEl.setAttribute("href", "https://github.com/" + repo + "/issues");
+    linkEl.setAttribute("target", "_blank");
+
+    //append to warning container
+    limitWarningEl.appendChild(linkEl);
+}
+
+GetRepoIssues("facebook/react");
